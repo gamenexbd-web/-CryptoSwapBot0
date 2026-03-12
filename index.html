@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premium Ad Reward System</title>
+
+<!-- Monetag SDK -->
+<script src='//libtl.com/sdk.js' data-zone='10715218' data-sdk='show_10715218'></script>
+
+<style>
+:root {
+    --primary: #00c853;
+    --primary-dark: #009624;
+    --secondary: #ff6d00;
+    --secondary-dark: #e65100;
+    --dark: #121212;
+    --darker: #0a0a0a;
+    --light: #f5f5f5;
+    --card-bg: #1f1f1f;
+    --gold: #ffd700;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, var(--darker), #1a1a2e);
+    color: var(--light);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 500px;
+    background: var(--card-bg);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.header {
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    padding: 25px;
+    text-align: center;
+}
+
+.content { padding: 25px; }
+
+.stat-card {
+    background: rgba(255,255,255,0.05);
+    border-radius: 15px;
+    padding: 15px;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.value {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary);
+}
+
+.buttons button {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    color: white;
+}
+
+.btn-3d { background: var(--primary); }
+.btn-secondary { background: var(--secondary); }
+
+.ad-notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: black;
+    padding: 15px 25px;
+    border-radius: 10px;
+    display: none;
+    z-index: 1000;
+}
+</style>
+</head>
+
+<body>
+
+<div class="ad-notification" id="ad-notification"></div>
+
+<div class="container">
+    <div class="header">
+        <h1>Premium Ad Reward System</h1>
+    </div>
+
+    <div class="content">
+
+        <div class="stat-card">
+            Watched Ads
+            <div class="value" id="watched-ads">0</div>
+        </div>
+
+        <div class="stat-card">
+            Earned Points
+            <div class="value" id="earned-points">0.00</div>
+        </div>
+
+        <div class="buttons">
+            <button class="btn-3d" onclick="watchAd()">Watch Ad (+0.50)</button>
+            <button class="btn-3d btn-secondary" id="auto-ad-btn" onclick="startAutoAds()">Auto Show Ads</button>
+            <button class="btn-3d" onclick="stopAutoAds()">Stop Auto Ads</button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+const POINTS_PER_AD = 0.5;
+let watchedAdsCount = 0;
+let earnedPoints = 0;
+let autoAdInterval;
+
+const watchedAdsEl = document.getElementById('watched-ads');
+const earnedPointsEl = document.getElementById('earned-points');
+const adNotificationEl = document.getElementById('ad-notification');
+
+function updateUI(){
+    watchedAdsEl.textContent = watchedAdsCount;
+    earnedPointsEl.textContent = earnedPoints.toFixed(2);
+}
+
+function showAdNotification(msg){
+    adNotificationEl.textContent = msg;
+    adNotificationEl.style.display = 'block';
+    setTimeout(()=> adNotificationEl.style.display='none',3000);
+}
+
+function watchAd(){
+
+    showAdNotification("Loading ad...");
+
+    if(typeof show_10715218 === 'function'){
+
+        show_10715218().then(()=>{
+
+            watchedAdsCount++;
+            earnedPoints += POINTS_PER_AD;
+
+            updateUI();
+            showAdNotification("Ad completed! +0.50 added");
+
+        }).catch(()=>{
+            showAdNotification("Ad not available");
+        });
+
+    } else {
+        showAdNotification("Ad SDK not loaded");
+    }
+}
+
+function startAutoAds(){
+    autoAdInterval = setInterval(watchAd, 20000);
+    document.getElementById('auto-ad-btn').textContent = "Auto Ads Running...";
+}
+
+function stopAutoAds(){
+    clearInterval(autoAdInterval);
+    document.getElementById('auto-ad-btn').textContent = "Auto Show Ads";
+}
+
+</script>
+</body>
+</html>
